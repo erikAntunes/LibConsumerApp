@@ -52,6 +52,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     // Lib Estudo
     implementation(libs.libraryandroid)
-    // Lib Voucher Antifraude
-   implementation(libs.lib.voucher.antifraude)
+
 }
