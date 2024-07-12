@@ -24,6 +24,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -49,5 +50,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    // Lib Estudo
     implementation(libs.libraryandroid)
+    // Lib Voucher Antifraude
+   implementation(libs.lib.voucher.antifraude)
 }

@@ -1,6 +1,9 @@
 package com.example.libconsumer
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -9,8 +12,10 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.result.contract.ActivityResultContracts
 import com.example.libconsumer.databinding.ActivityMainBinding
-import com.titanz.tech.mylibrary.MyLibraryAndroid
+import com.grupocasasbahia.libreconhecimentofacial.VoucherActivity
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,11 +34,7 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, MyLibraryAndroid().getGreeting(), Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .setAnchorView(R.id.fab).show()
-        }
+        callActivityLib()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -56,5 +57,40 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration)
                 || super.onSupportNavigateUp()
+    }
+
+    private fun callActivityLib(){
+        val intent = Intent(this, VoucherActivity::class.java)
+        intent.putExtra("operacao","Voucher_Digital");
+        intent.putExtra("empresaFilial",1);
+        intent.putExtra("filial",1000);
+        intent.putExtra("empresaFuncionario",21);
+        intent.putExtra("matricula","361798");
+        intent.putExtra("cpfCliente","60756201250");
+        resultLauncher.launch(intent);
+
+    }
+
+    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            Log.e("vaiii", "SUCESSO---> " + (data?.getLongExtra("codigoAutorizacaoCompra", 0).toString()))
+
+            binding.fab.setOnClickListener { view ->
+                Snackbar.make(view, data?.getLongExtra("codigoAutorizacaoCompra", 0).toString(), Snackbar.LENGTH_LONG)
+                    .setAction("Action", null)
+                    .setAnchorView(R.id.fab).show()
+            }
+
+        } else if (result.resultCode == Activity.RESULT_CANCELED) {
+            val data: Intent? = result.data
+            Log.e("vaiii", "Error---> " + (data?.getStringExtra("MSG") ?: ""))
+
+            binding.fab.setOnClickListener { view ->
+                Snackbar.make(view, "Deu Ruim", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null)
+                    .setAnchorView(R.id.fab).show()
+            }
+        }
     }
 }
